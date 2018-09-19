@@ -30,7 +30,7 @@ class ControllerBase
   # Populate the response with content.
   # Set the response's content type to the given type.
   # Raise an error if the developer tries to double render.
-  def render_content(content, content_type)
+  def render_content(content, content_type = 'text/html')
     raise "Double render error" if already_built_response?
     @already_built_response = true
     # already_built_response?
@@ -40,8 +40,16 @@ class ControllerBase
 
   # use ERB and binding to evaluate templates
   # pass the rendered html to render_content
-  def render(template_name)
-    
+  def render(template_name) #template_name :new, :edit, :create
+    dir_path =  File.dirname(__FILE__) # lib
+    temp_path = File.join(
+      ".",
+      "views",
+      "#{self.class.to_s.underscore}",
+      "#{template_name}.html.erb"
+    )
+    temp_code = File.read(temp_path)
+    render_content(ERB.new(temp_code).result(binding))
   end
 
   # method exposing a `Session` object
@@ -50,6 +58,7 @@ class ControllerBase
 
   # use this with the router to call action_name (:index, :show, :create...)
   def invoke_action(name)
+    
   end
 end
 
